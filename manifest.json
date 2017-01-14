@@ -1,0 +1,31 @@
+{
+  "manifest_version": 2,
+
+  "name": "MarkedBrunch",
+  "description": "Write your Brunch posts in MD",
+  "version": "0.1.1",
+
+  "icons": {
+    "128": "icon-128.png"
+  },
+
+  "browser_action": {
+    "default_icon": "icon.png"
+  },
+  "permissions": [
+    "https://brunch.co.kr/*write"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+          "https://brunch.co.kr/*write"
+        ],
+      "js": [
+          "js/colors.js",
+          "js/prism.js",
+          "js/marked.js",
+          "js/main.js"
+        ]
+    }
+  ]
+}
