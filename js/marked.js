@@ -901,8 +901,8 @@ Parser.prototype.tok = function(opts) {
   switch (this.token.type) {
     case 'newline': {
       const prev = this.prev.type
-      const padding = prev === 'text' || prev === 'code' || prev.endsWith('_end') ? 1 : 0
-      return this.renderer.newline(this.token.count - padding);
+      const padding = prev === 'text' || prev === 'code' || prev.endsWith('_end') ? -1 : 0
+      return this.renderer.newline(this.token.count + padding);
     }
     case 'hr': {
       return this.renderer.hr();
