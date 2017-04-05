@@ -19,11 +19,11 @@ var block = {
   newline: /^(\n+)/,
   code: /^( {4}[^\n]+)+/,
   fences: noop,
-  hr: /^( *[-*_]){3,} *(?:$)/,
+  hr: /^( *[-*_]){3,} *(?:\n|$)/,
   heading: /^ *(#{1,6}) *([^\n]+?) *#* *(?:$)/,
   lheading: /^([^\n]+)\n *(=|-){2,} *(?:$)/,
   blockquote: /^( *>[^\n]+(\n(?!def)[^\n]+)*)+/,
-  list: /^( *)(bull) [\s\S]+?(?:hr|def|\n{2,}(?! )(?!\1bull )|[ \t]*$)/,
+  elementsWithNegativePadding: /^( *)(bull) [\s\S]+?(?:hr|def|\n{2,}(?! )(?!\1bull )|[ \t]*$)/,
   html: /^ *(?:comment *(?:\n|\s*$)|closed *(?:\n{2,}|\s*$)|closing *(?:[ \t]*$))/,
   def: /^ *\[([^\]]+)\]: *<?([^\s>]+)>?(?: +["(]([^\n]+)[")])? *(?:$)/,
   paragraph: /^((?:[^\n]+\n?(?!hr|heading|lheading|blockquote|tag|def))+)/,
@@ -36,7 +36,7 @@ block.item = replace(block.item, 'gm')
   (/bull/g, block.bullet)
   ();
 
-block.list = replace(block.list)
+block.elementsWithNegativePadding = replace(block.elementsWithNegativePadding)
   (/bull/g, block.bullet)
   ('hr', '\\n+(?=\\1?(?:[-*_] *){3,}(?:\\n+|$))')
   ('def', '\\n+(?=' + block.def.source + ')')
@@ -86,7 +86,7 @@ block.gfm = merge({}, block.normal, {
 block.gfm.paragraph = replace(block.paragraph)
   ('(?!', '(?!'
     + block.gfm.fences.source.replace('\\1', '\\2') + '|'
-    + block.list.source.replace('\\1', '\\3') + '|')
+    + block.elementsWithNegativePadding.source.replace('\\1', '\\3') + '|')
   ();
 
 /**
@@ -94,7 +94,7 @@ block.gfm.paragraph = replace(block.paragraph)
  */
 
 block.brunch = merge({}, block.gfm, {
-
+  
 });
 
 // Limit 3
@@ -255,13 +255,13 @@ Lexer.prototype.token = function(src, top, bq) {
       continue;
     }
 
-    // list
-    if (cap = this.rules.list.exec(src)) {
+    // elementsWithNegativePadding
+    if (cap = this.rules.elementsWithNegativePadding.exec(src)) {
       src = src.substring(cap[0].length);
       bull = cap[2];
 
       this.tokens.push({
-        type: 'list_start',
+        type: 'elementsWithNegativePadding_start',
         ordered: bull.length > 1
       });
 
@@ -275,13 +275,13 @@ Lexer.prototype.token = function(src, top, bq) {
       for (; i < l; i++) {
         item = cap[i];
 
-        // Remove the list item's bullet
+        // Remove the elementsWithNegativePadding item's bullet
         // so it is seen as the next token.
         space = item.length;
         item = item.replace(/^ *([*+-]|\d+\.) +/, '');
 
         // Outdent whatever the
-        // list item contains. Hacky.
+        // elementsWithNegativePadding item contains. Hacky.
         if (~item.indexOf('\n ')) {
           space -= item.length;
           item = !this.options.pedantic
@@ -289,9 +289,9 @@ Lexer.prototype.token = function(src, top, bq) {
             : item.replace(/^ {1,4}/gm, '');
         }
 
-        // Determine whether the next list item belongs here.
-        // Backpedal if it does not belong in this list.
-        if (this.options.smartLists && i !== l - 1) {
+        // Determine whether the next elementsWithNegativePadding item belongs here.
+        // Backpedal if it does not belong in this elementsWithNegativePadding.
+        if (this.options.smartelementsWithNegativePaddings && i !== l - 1) {
           b = block.bullet.exec(cap[i + 1])[0];
           if (bull !== b && !(bull.length > 1 && b.length > 1)) {
             src = cap.slice(i + 1).join('\n') + src;
@@ -311,19 +311,19 @@ Lexer.prototype.token = function(src, top, bq) {
         this.tokens.push({
           type: loose
             ? 'loose_item_start'
-            : 'list_item_start'
+            : 'elementsWithNegativePadding_item_start'
         });
 
         // Recurse.
         this.token(item, false, bq);
 
         this.tokens.push({
-          type: 'list_item_end'
+          type: 'elementsWithNegativePadding_item_end'
         });
       }
 
       this.tokens.push({
-        type: 'list_end'
+        type: 'elementsWithNegativePadding_end'
       });
 
       continue;
@@ -748,11 +748,11 @@ Renderer.prototype.hr = function() {
   return `<div class="wrap_item item_type_hr hr_type_${type}" ${dataApp}><div class="inner_wrap"><hr></div></div>`;
 };
 
-Renderer.prototype.list = function(body, ordered) {
+Renderer.prototype.elementsWithNegativePadding = function(body, ordered) {
   return body;
 };
 
-Renderer.prototype.listitem = function(text) {
+Renderer.prototype.elementsWithNegativePaddingitem = function(text) {
   return `<p class="wrap_item item_type_bullet">${text}</p>`
 };
 
@@ -901,8 +901,8 @@ Parser.prototype.tok = function(opts) {
   switch (this.token.type) {
     case 'newline': {
       const prev = this.prev.type
-      const list = ['text', 'code', 'heading']
-      const padding = (~list.indexOf(prev) || prev.endsWith('_end')) ? -1 : 0
+      const elementsWithNegativePadding = ['text', 'code', 'heading']
+      const padding = (~elementsWithNegativePadding.indexOf(prev) || prev.endsWith('_end')) ? -1 : 0
       return this.renderer.newline(this.token.count + padding)
     }
     case 'hr': {
@@ -928,35 +928,35 @@ Parser.prototype.tok = function(opts) {
 
       return this.renderer.blockquote(body);
     }
-    case 'list_start': {
+    case 'elementsWithNegativePadding_start': {
       var body = ''
         , ordered = this.token.ordered;
 
-      while (this.next().type !== 'list_end') {
+      while (this.next().type !== 'elementsWithNegativePadding_end') {
         body += this.tok();
       }
 
-      return this.renderer.list(body, ordered);
+      return this.renderer.elementsWithNegativePadding(body, ordered);
     }
-    case 'list_item_start': {
+    case 'elementsWithNegativePadding_item_start': {
       var body = '';
 
-      while (this.next().type !== 'list_item_end') {
+      while (this.next().type !== 'elementsWithNegativePadding_item_end') {
         body += this.token.type === 'text'
           ? this.parseText()
           : this.tok();
       }
 
-      return this.renderer.listitem(body);
+      return this.renderer.elementsWithNegativePaddingitem(body);
     }
     case 'loose_item_start': {
       var body = '';
 
-      while (this.next().type !== 'list_item_end') {
+      while (this.next().type !== 'elementsWithNegativePadding_item_end') {
         body += this.tok();
       }
 
-      return this.renderer.listitem(body);
+      return this.renderer.elementsWithNegativePaddingitem(body);
     }
     case 'html': {
       var html = !this.token.pre && !this.options.pedantic
@@ -1138,7 +1138,7 @@ marked.defaults = {
   sanitize: false,
   sanitizer: null,
   mangle: true,
-  smartLists: false,
+  smartelementsWithNegativePaddings: false,
   silent: false,
   highlight: null,
   langPrefix: 'lang-',
