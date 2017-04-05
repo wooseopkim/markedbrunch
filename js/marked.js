@@ -713,7 +713,7 @@ function Renderer(options) {
 
 const codeStyle = 'font-family: Helvetica; background-color: #959595;';
 Renderer.prototype.code = function(code, lang, escaped) {
-  code = code.split('\n');
+  code = code.split('\n')
 
   if (this.options.highlight) {
     var out = code.map(line => this.options.highlight(line, lang));
@@ -723,11 +723,11 @@ Renderer.prototype.code = function(code, lang, escaped) {
     }
   }
 
-  const hr = this.hr();
-  const p = this.paragraph;
-  code = code.map(line => p(`    ${line}`)).join('\n').replace('p class="', 'p class="code ');
+  const hr = this.hr()
+  const p = this.paragraph
+  code = code.map(line => p(`    ${line}`)).join('\n').replace(/p class="/g, 'p class="code ')
 
-  return `${hr}${code}${hr}`;
+  return `${hr}${code}${hr}`
 };
 
 Renderer.prototype.blockquote = function(quote) {

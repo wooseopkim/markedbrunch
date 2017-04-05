@@ -7,12 +7,12 @@
   const prism = w.Prism
   const typeColor = w.typeColor
 
-  const $ = q => document.getElementsByClassName(q)[0]
-  const $$ = document.getElementsByClassName.bind(document)
+  const $ = document.querySelector.bind(document)
+  const $$ = document.querySelectorAll.bind(document)
   const foreach = (xs, f) => Array.prototype.forEach.call(xs, f)
 
   // Populate UI
-  const saveButton = $('#save')
+  const saveButton = document.getElementsByClassName('#save')[0]
   const compileButton = saveButton.cloneNode()
   compileButton.className = '#compile'
   compileButton.textContent = '변환'
@@ -32,24 +32,27 @@
   // Register compile event
   const foot = '\n<blockquote class="blockquote_type3 wrap_item item_type_text" data-app="{&quot;type&quot;:&quot;quotation&quot;,&quot;kind&quot;:&quot;box&quot;,&quot;data&quot;:[{&quot;type&quot;:&quot;text&quot;,&quot;text&quot;:&quot;이 글은 &quot;},{&quot;type&quot;:&quot;anchor&quot;,&quot;url&quot;:&quot;https://chrome.google.com/webstore/detail/markedbrunch/kcaapljhfpbaakjodmebfhgbjdbifekh&quot;,&quot;data&quot;:[{&quot;type&quot;:&quot;text&quot;,&quot;text&quot;:&quot;MarkedBrunch&quot;}],&quot;target&quot;:&quot;_blank&quot;},{&quot;type&quot;:&quot;text&quot;,&quot;text&quot;:&quot;를 이용해 작성되었습니다.&quot;}]}">이 글은 <a class="link" target="_blank" href="https://chrome.google.com/webstore/detail/markedbrunch/kcaapljhfpbaakjodmebfhgbjdbifekh">MarkedBrunch</a>를 이용해 작성되었습니다.</blockquote>'
   const compile = () => {
-    const wrapBody = $('wrap_body')
+    const wrapBody = $('.wrap_body')
     wrapBody.innerHTML = marked(wrapBody.innerText + foot)
   }
   const displayHack = () => {
-    const codes = $$('item_type_text code')
-    const codeStyle = 'white-space: pre-wrap;'
-    foreach(codes, code => {code.style = codeStyle, code.className = code.className.replace('code', '')})
+    const codes = $$('.item_type_text.code')
+    const codeStyle = 'white-space: pre-wrap;'  
+    foreach(codes, code => {
+      code.style = codeStyle
+      code.className = code.className.replace(/code/g, '')
+    })
 
-    const hrs = $$('item_type_hr')
+    const hrs = $$('.item_type_hr')
     const hrStyle = 'width: 940px; margin-left: -120px;'
     foreach(hrs, hr => hr.style = hrStyle)
 
-    const imgs = $$('item_type_img')
+    const imgs = $$('.item_type_img')
     const imgStyle = 'width: 940px; margin-left: -120px; display: block;'
     foreach(imgs, img => img.style = imgStyle)
   }
   const replaceImages = () => {
-    const imgs = $$('item_type_img')
+    const imgs = $$('.item_type_img')
     foreach(imgs, replaceSrc)
   }
   compileButton.addEventListener('click', e => {
