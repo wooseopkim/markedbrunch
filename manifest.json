@@ -3,7 +3,7 @@
 
   "name": "MarkedBrunch",
   "description": "Write your Brunch posts in MD",
-  "version": "0.1.2",
+  "version": "0.1.3",
 
   "icons": {
     "128": "icon-128.png"

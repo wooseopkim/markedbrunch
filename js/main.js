@@ -30,7 +30,7 @@
   }
 
   // Register compile event
-  const foot = '\n\n<blockquote class="blockquote_type3 wrap_item item_type_text" data-app="{&quot;type&quot;:&quot;quotation&quot;,&quot;kind&quot;:&quot;box&quot;,&quot;data&quot;:[{&quot;type&quot;:&quot;text&quot;,&quot;text&quot;:&quot;이 글은 &quot;},{&quot;type&quot;:&quot;anchor&quot;,&quot;url&quot;:&quot;https://chrome.google.com/webstore/detail/markedbrunch/kcaapljhfpbaakjodmebfhgbjdbifekh&quot;,&quot;data&quot;:[{&quot;type&quot;:&quot;text&quot;,&quot;text&quot;:&quot;MarkedBrunch&quot;}],&quot;target&quot;:&quot;_blank&quot;},{&quot;type&quot;:&quot;text&quot;,&quot;text&quot;:&quot;를 이용해 작성되었습니다.&quot;}]}">이 글은 <a class="link" target="_blank" href="https://chrome.google.com/webstore/detail/markedbrunch/kcaapljhfpbaakjodmebfhgbjdbifekh">MarkedBrunch</a>를 이용해 작성되었습니다.</blockquote>'
+  const foot = '\n<blockquote class="blockquote_type3 wrap_item item_type_text" data-app="{&quot;type&quot;:&quot;quotation&quot;,&quot;kind&quot;:&quot;box&quot;,&quot;data&quot;:[{&quot;type&quot;:&quot;text&quot;,&quot;text&quot;:&quot;이 글은 &quot;},{&quot;type&quot;:&quot;anchor&quot;,&quot;url&quot;:&quot;https://chrome.google.com/webstore/detail/markedbrunch/kcaapljhfpbaakjodmebfhgbjdbifekh&quot;,&quot;data&quot;:[{&quot;type&quot;:&quot;text&quot;,&quot;text&quot;:&quot;MarkedBrunch&quot;}],&quot;target&quot;:&quot;_blank&quot;},{&quot;type&quot;:&quot;text&quot;,&quot;text&quot;:&quot;를 이용해 작성되었습니다.&quot;}]}">이 글은 <a class="link" target="_blank" href="https://chrome.google.com/webstore/detail/markedbrunch/kcaapljhfpbaakjodmebfhgbjdbifekh">MarkedBrunch</a>를 이용해 작성되었습니다.</blockquote>'
   const compile = () => {
     const wrapBody = $('wrap_body')
     wrapBody.innerHTML = marked(wrapBody.innerText + foot)

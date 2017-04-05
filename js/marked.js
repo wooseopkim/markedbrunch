@@ -711,7 +711,7 @@ function Renderer(options) {
   this.options = options || {};
 }
 
-const codeStyle = 'font-family: Helvetica; background-color: #959595; background-color: rgba(100, 100, 100, .4)';
+const codeStyle = 'font-family: Helvetica; background-color: #959595;';
 Renderer.prototype.code = function(code, lang, escaped) {
   code = code.split('\n');
 
@@ -770,7 +770,7 @@ Renderer.prototype.em = function(text) {
 };
 
 Renderer.prototype.codespan = function(text) {
-  return `<span style="${codeStyle};"><b>${text}</b></span>`;
+  return `<b><span data-fr-verified="true" style="${codeStyle};">${text}</span></b>`;
 };
 
 Renderer.prototype.br = function() {
@@ -901,8 +901,9 @@ Parser.prototype.tok = function(opts) {
   switch (this.token.type) {
     case 'newline': {
       const prev = this.prev.type
-      const padding = prev === 'text' || prev === 'code' || prev.endsWith('_end') ? -1 : 0
-      return this.renderer.newline(this.token.count + padding);
+      const list = ['text', 'code', 'heading']
+      const padding = (~list.indexOf(prev) || prev.endsWith('_end')) ? -1 : 0
+      return this.renderer.newline(this.token.count + padding)
     }
     case 'hr': {
       return this.renderer.hr();
