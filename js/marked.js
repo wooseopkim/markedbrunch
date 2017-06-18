@@ -817,7 +817,8 @@ const color = this.color || window.color || {}
 Renderer.prototype.color = function(textColor, bgColor, text) {
   textColor = color[textColor] || textColor
   bgColor = color[bgColor] || bgColor
-  return `<span style="color:#${textColor}; background-color:#${bgColor}">${text}</span>`;
+  console.log(color, textColor, bgColor)
+  return `<span data-fr-verified="true" style="color:#${textColor}; background-color:#${bgColor}">${text}</span>`;
 }
 
 /**

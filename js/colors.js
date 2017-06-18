@@ -11,6 +11,14 @@
     { blue: '2e84b6' },
     { purple: '5c5cb2' },
   ]
+  const alias = {
+    gray: ['grey']
+  }
+  for (original in alias) {
+    alias[original].forEach(name => {
+      palette.push({ [name]: Object.values(palette.find(x => Object.keys(x)[0] === original ))[0] })
+    })
+  }
   const out = {}
   palette.forEach((v, i) => {
     const name = Object.keys(v)[0]
